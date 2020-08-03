@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <!--importing a free Google font for stylization-->
+    <link href="https://fonts.googleapis.com/css?family=Patua+One&display=swap" rel="stylesheet">
+<head>
+  <!--importing the javascript jQuery library-->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js" 
+  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" 
+  crossorigin="anonymous">
+  </script>
+
+<!--Some CSS parameters for stylization-->
+<style>
+  .font-family{
+    font-family: "Patua One";
+  }
+
+  .button {
+  background-color: #FFFFFF;
+  border: none;
+  color: black;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 5px 2px;
+  cursor: pointer;
+}
+
+  body {
+  
+  background-color: #3CCDBB;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 20px;
+  
+  }
+  </style>
+</head>
+
+<!--Main body of the page before the Get Movie button is pressed-->
+<body>
+<div class = "movie">
+  <div class = "row text center">
+    <h1 class = "Pauta One">Need something to watch?</h1>
+    <h2 class = "Pauta One">Click for a random movie</h2>
+    <button id="getMovie" class="button">Get Movie</button>
+    
+    <!--Refresh button that reloads the page when pressed-->
+    <input type="button" class="button" value="Refresh" onClick="location.reload(true);"> 
+  </div>
+  <div id="movie_info" class="details"></div>
+</div>
+
+<!--Javascript + inner HTML code to randomly pull from TMDb's database and display a movie-->
+<script type="text/javascript">
+
+const movie_buttn = document.getElementById('getMovie');
+const movie_container = document.getElementById('movie_info');
+
+//image url necessary for posters to display
+const img_url = "https://image.tmdb.org/t/p/w500/"; 
+
+/*random number variable based on the latest movie ID 
+added to the database which is 655817 as of 12-14-2019
+*/
+var rand = Math.floor(Math.random() * 655817)
+
+//all the required information needed for the API to be called, including the unique API key
+var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://api.themoviedb.org/3/movie/"+rand+"?language=en-US&api_key=8ea68359e283841e2bf9a2baa43ea58e",
+  "method": "GET",
+  "headers": {},
+  "data": "{}"
+}
+
+/*inner HTML function that displays the specificed parameters 
+  of the movie randomly pulled from the database once 
+  the Get Movie button is pressed 
+  */
+function showDetails(response){
+  const infoHTML = `
+        <div class="row">
+            <div class="poster">
+              <img src="${img_url+response.poster_path}" alt="Movie Poster" align="top" style="width:200px;height:300px;">
+            </div>
+            <div class="info">
+              ${response.title ? `<p><strong>Title:</strong> ${response.title}</p>` : ''}
+              ${response.release_date ? `<p><strong>Release Date:</strong> ${response.release_date}</p>` : ''}
+              ${response.runtime ? `<p><strong>Length:</strong> ${response.runtime+" mins"}</p>` : ''}
+              ${response.overview ? `<p><strong>Overview:</strong> ${response.overview}</p>` : ''} 
+            </div>
+         </div>
+
+
+`;
+  movie_container.innerHTML = infoHTML;
+}
+
+/* 
+Event listener for the Get Movie button so that it's actually functional
+*/
+movie_buttn.addEventListener('click', () => {
+ $.ajax(settings).done(function (response){
+    showDetails(response);
+  });
+});
+
+</script>
+</body>
+</html>
